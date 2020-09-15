@@ -7,14 +7,15 @@
   }
   $user_id=$_SESSION['id'];
 
-  if(isset($_POST['search'])){
-    setcookie('search', $_POST['search'], time() + (86400 * 30), "/");
+  if(isset($_GET['id'])){
+    setcookie('id', $_GET['id'], time() + (86400 * 30), "/");
   }else{
     if(empty($_GET['pageno'])){
-      unset($_COOKIE['search']); 
-      setcookie('search', null, -1, '/'); 
+      unset($_COOKIE['id']); 
+      setcookie('id', null, -1, '/'); 
     }
   }
+
 ?>
 
 <?php
@@ -27,17 +28,30 @@
         <div class="row">
           
           <div class="col-md-12">
+             <a href="order_list.php" type="button" class="btn btn-default">BACK</a><br><br>
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Category Listings</h3>
+                <h3 class="card-title">Sale Order Detail</h3>
               </div>
               <!-- /.card-header -->
+              <?php
+                 $id = (isset($_GET['id']))?$_GET['id']:$_COOKIE['id'];
+
+                 $pdostatement = $pdo->prepare("SELECT sale_order.*,users.name FROM sale_order,users WHERE users.id=sale_order.customer_id AND sale_order.id=$id");
+                 $pdostatement->execute();
+                 $orderInfo = $pdostatement->fetch(PDO::FETCH_ASSOC);
+              ?>
               <div class="card-body">
-                <div>
-                  <h6 style="display: inline;margin-right:5px">New Category</h6>
-                  <a href="cat_add.php" type="button" class="btn btn-success">Create +</a>
-                </div>
-                <br>
+                
+                  <div style="margin-right: 30px; ">
+                    <p style="text-align:left;display:inline;float:right;">
+                      <b>Name: </b><?= $orderInfo['name']?> <br>
+                      <b>Order ID: </b><?= $orderInfo['id']?><br>
+                      <b>Order Date: </b><?= date("d M Y",strtotime($orderInfo['order_date']))?>
+                    </p>
+                    
+                  </div>
+                
                
                 <!-- php script -->
                 <?php
@@ -49,63 +63,42 @@
                   $numOfRecs = 5;
                   $offset = ($pageno - 1) * $numOfRecs;
 
-                  if(empty($_POST['search']) && empty($_COOKIE['search'])){
-                    $pdostatement = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
+                    $pdostatement = $pdo->prepare("SELECT * FROM sale_order_detail WHERE sale_order_id=$id");
                     $pdostatement->execute();
                     $result = $pdostatement->fetchAll();
                     $total_pages = ceil(count($result)/$numOfRecs);
                     
-                       $pdostatement = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC LIMIT $offset,$numOfRecs");
+                       $pdostatement = $pdo->prepare("SELECT sod.*,p.name,p.price as unitPrice FROM sale_order_detail as sod,products as p WHERE sod.product_id=p.id AND sod.sale_order_id=$id LIMIT $offset,$numOfRecs");
                        $pdostatement->execute();
-                       $categories = $pdostatement->fetchAll();
-                    
-                  }else{
-                    $searchkey = isset($_POST['search'])?$_POST['search']:$_COOKIE['search'];
-                    $pdostatement = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$searchkey%' ORDER BY id DESC");
-                    $pdostatement->execute();
-                    $result = $pdostatement->fetchAll();
-                    $total_pages = ceil(count($result)/$numOfRecs);
-                    
-                       $pdostatement = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$searchkey%' ORDER BY id DESC LIMIT $offset,$numOfRecs");
-                       $pdostatement->execute();
-                       $categories = $pdostatement->fetchAll();
-                    
-                  }
+                       $saleDetails = $pdostatement->fetchAll();
+                  
                 ?>
 
                 <table class="table table-bordered">
                   <thead>                  
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th style="width: 40px">Actions</th>
+                      <th>Product</th>
+                      <th>Unit Price</th>
+                      <th>Quantity</th>
+                      <th>Line Total</th>
                     </tr>
                   </thead>
                   <tbody>
 
                      <?php
 
-                      if($categories){
+                      if($saleDetails){
                         $i=1;
-                        foreach ($categories as $cat) {
+                        foreach ($saleDetails as $sdetail) {
+
                     ?>
                         <tr>
                           <td><?= $i ?></td>
-                          <td><?= escape($cat['name']) ?></td>
-                          <td><?= escape(substr($cat['description'],0,50))."..." ?></td>
-                          <td>
-                            <div class="btn-group">
-                              <div class="container">
-                                <a href="cat_edit.php?id=<?= $cat['id'] ?>" type="button" class="btn btn-warning" >Edit</a>
-                              </div>
-                              <div class="container">
-                                <a href="cat_delete.php?id=<?= $cat['id'] ?>" 
-                                  onclick="return confirm('Are you sure you want to delete this category?')" 
-                                  type="button" class="btn btn-danger" >Delete</a>
-                              </div>
-                            </div>
-                          </td>
+                          <td><?= escape($sdetail['name']) ?></td>
+                          <td><?= escape($sdetail['unitPrice']) ?></td>
+                          <td><?= escape($sdetail['quantity']) ?></td>
+                          <td><?= escape($sdetail['price']) ?></td>
                         </tr>
                     <?
                           $i++;

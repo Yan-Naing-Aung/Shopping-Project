@@ -6,19 +6,11 @@
     header("location: login.php");
   }
   $user_id=$_SESSION['id'];
-
-  if(isset($_POST['search'])){
-    setcookie('search', $_POST['search'], time() + (86400 * 30), "/");
-  }else{
-    if(empty($_GET['pageno'])){
-      unset($_COOKIE['search']); 
-      setcookie('search', null, -1, '/'); 
-    }
-  }
+  
 ?>
 
 <?php
-  include 'header.html';
+  include 'header.php';
 ?>
 
     <!-- Main content -->
@@ -29,15 +21,12 @@
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Product Listings</h3>
+                <h3 class="card-title">Order Listings</h3>
               </div>
               <!-- /.card-header -->
-              <div class="card-body">
-                <div>
-                  <h6 style="display: inline;margin-right:5px">New Blog Post</h6>
-                  <a href="add.php" type="button" class="btn btn-success">Create +</a>
-                </div>
-                <br>
+              <div class="card-body"> 
+               
+                <!-- php script -->
                 <?php
                   if(!empty($_GET['pageno'])){
                     $pageno = $_GET['pageno'];
@@ -47,59 +36,49 @@
                   $numOfRecs = 5;
                   $offset = ($pageno - 1) * $numOfRecs;
 
-                  if(empty($_POST['search']) && empty($_COOKIE['search'])){
-                    $pdostatement = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+                    $pdostatement = $pdo->prepare("SELECT * FROM sale_order ORDER BY id DESC");
                     $pdostatement->execute();
                     $result = $pdostatement->fetchAll();
                     $total_pages = ceil(count($result)/$numOfRecs);
                     
-                       $pdostatement = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfRecs");
+                       $pdostatement = $pdo->prepare("SELECT * FROM sale_order ORDER BY id DESC LIMIT $offset,$numOfRecs");
                        $pdostatement->execute();
-                       $blogs = $pdostatement->fetchAll();
+                       $orders = $pdostatement->fetchAll();
                     
-                  }else{
-                    $searchkey = isset($_POST['search'])?$_POST['search']:$_COOKIE['search'];
-                    $pdostatement = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchkey%' ORDER BY id DESC");
-                    $pdostatement->execute();
-                    $result = $pdostatement->fetchAll();
-                    $total_pages = ceil(count($result)/$numOfRecs);
-                    
-                       $pdostatement = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$searchkey%' ORDER BY id DESC LIMIT $offset,$numOfRecs");
-                       $pdostatement->execute();
-                       $blogs = $pdostatement->fetchAll();
-                    
-                  }
+                  
                 ?>
+
                 <table class="table table-bordered">
                   <thead>                  
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Title</th>
-                      <th>Content</th>
+                      <th>User</th>
+                      <th>Total Price</th>
+                      <th>Order Date</th>
                       <th style="width: 40px">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
 
-                    <?php
+                     <?php
 
-                      if($blogs){
+                      if($orders){
                         $i=1;
-                        foreach ($blogs as $blog) {
+                        foreach ($orders as $order) {
+
+                          $userStmt = $pdo->prepare("SELECT name,id FROM users WHERE id=".$order['customer_id']);
+                          $userStmt->execute();
+                          $users = $userStmt->fetch();
                     ?>
                         <tr>
                           <td><?= $i ?></td>
-                          <td><?= escape($blog['title']) ?></td>
-                          <td><?= escape(substr($blog['content'],0,50))."..." ?></td>
+                          <td><?= escape($users['name']) ?></td>
+                          <td><?= escape($order['total_price']) ?></td>
+                          <td><?= date("d-M-Y",strtotime($order['order_date'])) ?></td>
                           <td>
                             <div class="btn-group">
                               <div class="container">
-                                <a href="edit.php?id=<?= $blog['id'] ?>" type="button" class="btn btn-warning" >Edit</a>
-                              </div>
-                              <div class="container">
-                                <a href="delete.php?id=<?= $blog['id'] ?>" 
-                                  onclick="return confirm('Are you sure you want to delete this blog?')" 
-                                  type="button" class="btn btn-danger" >Delete</a>
+                                <a href="order_detail.php?id=<?= $order['id'] ?>" type="button" class="btn btn-default" >View</a>
                               </div>
                             </div>
                           </td>
@@ -114,7 +93,7 @@
                 </table>
                 <br>
                 <nav aria-label="Page navigation example" style="float: right;">
-                  <ul class="pagination">
+                   <ul class="pagination">
                     <li class="page-item"><a class="page-link" href="?pageno=1">First</a></li>
                     <li class="page-item <?php if($pageno<=1){echo 'disabled';} ?>">
                       <a class="page-link" href="<?php if($pageno<=1){echo '#';}else{echo '?pageno='.($pageno-1);}?>">Previous</a>

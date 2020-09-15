@@ -60,7 +60,7 @@
 ?>
 
 <?php
-  include 'header.html';
+  include 'header.php';
 ?>
 
     <!-- Main content -->
