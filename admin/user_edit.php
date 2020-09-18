@@ -10,22 +10,35 @@
   if(isset($_POST['submit'])){
 
 
-    if(empty($_POST['name']) || empty($_POST['email']) ){
+    if(empty($_POST['name']) || empty($_POST['email']) || empty($_POST['phno']) || empty($_POST['address'])
+      || (!is_numeric($_POST['phno'])) || strlen($_POST['phno'])<6 ){
       if(empty($_POST['name'])){
         $nameError = "<p style='color:red'>*Name cannot be null</p>";
       }
       if(empty($_POST['email'])){
         $emailError = "<p style='color:red'>*Email cannot be null</p>";
       }
+      if(empty($_POST['phno'])){
+        $phnoError = "<span class='errorMsg'>*Phone Number cannot be null</span>";
+      }
+      if(!is_numeric($_POST['phno'])){
+        $phnoError = "<span class='errorMsg'>*Phone Number cannot be string</span>";
+      }elseif(strlen($_POST['phno'])<6){
+        $phnoError = "<span class='errorMsg'>*Invalid Phone number</span>";
+      }
+      if(empty($_POST['address'])){
+        $addrError = "<span class='errorMsg'>*Address cannot be null</span>";
+      }
 
     }elseif(!empty($_POST['pass']) && strlen($_POST['pass'])<4){
       $passError = "<p style='color:red'>*Password should be at least 4 characters</p>";
-    }
-    else{
+    }else{
       $name = $_POST['name'];
       $email = $_POST['email'];
       $pass = password_hash($_POST['pass'], PASSWORD_DEFAULT);
       $id = $_POST['id'];
+      $phno = $_POST['phno'];
+      $address = $_POST['address'];
 
       if(!empty($_POST['admin'])){
         $admincheck = 1;
@@ -41,9 +54,9 @@
         echo "<script>alert('Email Duplicated!');</script>";
       }else{
         if(empty($_POST['pass'])){
-           $stmt = $pdo->prepare("UPDATE users SET name='$name',email='$email',role='$admincheck' WHERE id='$id'");
+           $stmt = $pdo->prepare("UPDATE users SET name='$name',email='$email',phone_num=$phno,address='$address',role='$admincheck' WHERE id='$id'");
         }else{
-           $stmt = $pdo->prepare("UPDATE users SET name='$name',email='$email',role='$admincheck',password='$pass' WHERE id='$id'");
+           $stmt = $pdo->prepare("UPDATE users SET name='$name',email='$email',phone_num=$phno,address='$address',role='$admincheck',password='$pass' WHERE id='$id'");
         }
         $result = $stmt->execute();
         if($result){
@@ -85,6 +98,14 @@
                     <label for="">Password</label><?= empty($passError)?'':$passError;?>
                     <span>User already has a password</span>
                     <input type="Password" class="form-control" name="pass" >
+                  </div>
+                  <div class="form-group">
+                    <label for="">Phone Number</label><?= empty($phnoError)?'':$phnoError;?>
+                    <input type="number" class="form-control" name="phno" value="<?= escape($result['phone_num'])?>" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="">Address</label><?= empty($addrError)?'':$addrError;?>
+                    <input type="text" class="form-control" name="address" value="<?= escape($result['address'])?>" required>
                   </div>
                   <div class="form-group" style="margin-bottom: 1.5rem">
                     <label>Role</label>

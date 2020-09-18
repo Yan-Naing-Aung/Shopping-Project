@@ -15,6 +15,7 @@ if($_POST){
 		if(password_verify($pass, $user['password'])){
 			$_SESSION['userid'] = $user['id'];
 			$_SESSION['username'] = $user['name'];
+
 			$_SESSION['logged_in'] = time();
 			header("Location: index.php");
 		}
@@ -70,8 +71,7 @@ if($_POST){
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-start">
 				<div class="col-first">
 					<h1 style="color:black"><img src="img/fav.png" alt=""> YN Shopping </h1>
-					<nav class="d-flex align-items-center" style="margin-left: 3rem;font-size: 20px">
-						<a href="#" style="color:brown"><span class="lnr lnr-arrow-left"></span></a>
+					<nav class="d-flex align-items-center" style="margin-left: 4rem;font-size: 20px">
 						<a href="login.php" style="color:brown">Login</a>
 					</nav>
 				</div>

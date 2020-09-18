@@ -4,6 +4,10 @@
 				require 'config/config.php';
   				require 'config/common.php';
 
+  				if(empty($_SESSION['userid']) && empty($_SESSION['logged_in'])){
+				  header("location: login.php");
+				}
+
   				if(isset($_POST['search'])){
 			      setcookie('search', $_POST['search'], time() + (86400 * 30), "/");
 			    }else{
@@ -79,15 +83,13 @@
                     			foreach($catResult as $cat){
                     		?>
                     		<li class="main-nav-list">
-                    			<a href="index.php?cat_id=<?=$cat['id']?>" ><span class="lnr lnr-arrow-right"></span>
-                    				<?= escape($cat['name']) ?></a>
+
+                    			<a href="index.php?cat_id=<?=$cat['id']?>" style="<?=($_GET['cat_id']==$cat['id'])?'color:#ffba00;':'';?>">
+                    				<span class="lnr lnr-arrow-right"></span><?= escape($cat['name']) ?></a>
                     		</li>
                     		<?
                     			}
 							?>
-							
-
-						
 					</ul>
 				</div>
 			</div>
@@ -132,10 +134,10 @@
 						<a href="?pageno=<?= $leftno ?>&index=<? $index=1;echo $index; ?>"><?= $leftno; ?></a>
 
 						<a href="?pageno=<?= $centerno ?>&index=<? $index=2;echo $index; ?>" 
-							style="<?=($total_pages<2)?'pointer-events: none':''?>"><?= $centerno; ?></a>
+							style="<?=($total_pages<2)?'pointer-events: none;color:#dddddd;':''?>"><?= $centerno; ?></a>
 
 						<a href="?pageno=<?= $rightno ?>&index=<? $index=3;echo $index; ?>" 
-							style="<?=($total_pages<3)?'pointer-events: none':''?>" ><?= $rightno ?></a>
+							style="<?=($total_pages<3)?'pointer-events: none;color:#dddddd;':''?>" ><?= $rightno ?></a>
 
 						<a href="<?php if($rightno>= $total_pages){echo '#';}else{echo '?index=10&data='.$rightno;}?>" 
 						class="next-arrow" style="<?=($rightno>= $total_pages)?'pointer-events: none':''?>" >
@@ -162,7 +164,7 @@
 							<div class="single-product">
 								<img class="img-fluid" src="img/<?= escape($product['image'])?>" alt="">
 								<div class="product-details">
-									<h6><a href="product_detail.php"><?=escape($product['name'])?></a> </h6>
+									<h6><?=escape($product['name'])?> </h6>
 									<div class="price">
 										<h6>$<?=escape($product['price'])?></h6>
 									</div>
@@ -173,7 +175,7 @@
 											<p class="hover-text">add to bag</p>
 										</a>
 										
-										<a href="product_detail.php" class="social-info">
+										<a href="product_detail.php?id=<?=$product['id']?>" class="social-info">
 											<span class="lnr lnr-move"></span>
 											<p class="hover-text">view more</p>
 										</a>
@@ -186,7 +188,7 @@
 								}
 							}else{ 
 						?>
-								<div class="">There is no product on this categories</div>
+								<div class="text-align:center;margin:60px 0;font-size:30px;">There is no product on this categories</div>
 						<?	
 							}
 						?>

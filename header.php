@@ -20,6 +20,7 @@
 	<!--
             CSS
             ============================================= -->
+
 	<link rel="stylesheet" href="css/linearicons.css">
 	<link rel="stylesheet" href="css/owl.carousel.css">
 	<link rel="stylesheet" href="css/font-awesome.min.css">
@@ -28,6 +29,15 @@
 	<link rel="stylesheet" href="css/nouislider.min.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/ErrorMsgPractice.css">
+	<style type="text/css">
+		.tag{
+			    color: #222222;
+		    line-height: 80px;
+		    font-weight: 200;
+		    font-size: 16px;
+		}
+	</style>
 	
 
 </head>
@@ -40,7 +50,8 @@
 			<nav class="navbar navbar-expand-lg navbar-light main_box">
 				<div class="container">
 					<!-- Brand and toggle get grouped for better mobile display -->
-					<a class="navbar-brand logo_h" href="index.php"><img src="img/fav.png" alt=""> YANNO</a>
+					<a class="navbar-brand logo_h" href="index.php" ><img src="img/fav.png" alt=""> 
+						<span style="font-weight: 500">YN</span> Shopping</a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="icon-bar"></span>
@@ -51,14 +62,16 @@
 					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 						<ul class="nav navbar-nav menu_nav ml-auto">
 							
-							
-						
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							<li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
 							<li class="nav-item">
 								<button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
 							</li>
+							<li class="nav-item">
+								<button class="search"><a href="logout.php" class="tag" title="Logout"><span class="ti-shift-right "></span></a></button>
+							</li>
+
 						</ul>
 					</div>
 				</div>
