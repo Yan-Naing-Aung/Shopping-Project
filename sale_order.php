@@ -1,3 +1,81 @@
+<?php
+require 'config/config.php';
+require 'config/common.php';
+
+	$user_id = $_SESSION['userid'];
+
+	$MESSAGE = "";
+
+	if(!empty($_SESSION['cart'])){
+
+		$subTotal = 0;
+		$subPrice = 0;
+		$order_date = date('Y-m-d H:i:s');
+		foreach ($_SESSION['cart'] as $id => $qty) {
+	        $id = str_replace("id", "", $id);
+
+	        $stmt = $pdo->prepare("SELECT * FROM products WHERE id=".$id);
+	        $stmt->execute();
+	        $product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+	        $subPrice = $product['price'] * $qty;
+	        $subTotal += $subPrice; 
+	    }
+
+	    //insert into sale_order
+	    $stmt = $pdo->prepare("INSERT INTO sale_order(customer_id,total_price,order_date) VALUES (:customer_id,:total_price,:order_date);");
+	    $result = $stmt->execute(
+	    	array(
+	    		":customer_id"=>$user_id,
+	    		":total_price"=>$subTotal,
+	    		":order_date"=>$order_date
+	    	)
+	    );
+
+	    if($result){
+	    	$saleOrderId = $pdo->lastInsertId();
+	    	foreach ($_SESSION['cart'] as $id => $qty) {
+		        $id = str_replace("id", "", $id);
+		        $subPrice = $product['price'] * $qty;
+
+		        $sdStmt = $pdo->prepare("INSERT INTO sale_order_detail(sale_order_id,product_id,quantity,price) VALUES (:sale_order_id,:product_id,:quantity,:price)");
+			    $sdResult = $sdStmt->execute(
+			    	array(
+			    		":sale_order_id"=>$saleOrderId,
+			    		":product_id"=>$id,
+			    		":price"=>$subPrice,
+			    		":quantity"=>$qty
+			    	)
+			    );
+
+			    if($sdResult){
+			    	$qStmt = $pdo->prepare("SELECT quantity FROM products WHERE id=".$id);
+			    	$qStmt->execute();
+			    	$qResult = $qStmt->fetch();
+
+			    	$updateQty = $qResult['quantity'] - $qty;
+
+			    	$updateStmt = $pdo->prepare("UPDATE products SET quantity=:upd_qty WHERE id=:id");
+			    	$upResult = $updateStmt->execute(
+			    		array(":upd_qty"=>$updateQty,":id"=>$id)
+			    	);
+
+			    	if($upResult){
+			    		unset($_SESSION['cart']);
+			    		$MESSAGE = "Thank you. Your order has been received.";
+			    	}
+
+			    }
+		        
+		    }
+	    }
+	}else{
+		$MESSAGE = "Transaction Not Succeed.";
+	}
+
+	
+?>
+
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
 
@@ -38,7 +116,8 @@
 			<nav class="navbar navbar-expand-lg navbar-light main_box">
 				<div class="container">
 					<!-- Brand and toggle get grouped for better mobile display -->
-					<a class="navbar-brand logo_h" href="index.html"><img src="img/fav.png" alt=""> YANNO</a>
+					<a class="navbar-brand logo_h" href="index.php"><img src="img/fav.png" alt="">
+					 <span style="font-weight: 500">YN</span> Shopping</a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="icon-bar"></span>
@@ -48,15 +127,13 @@
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 						<ul class="nav navbar-nav menu_nav ml-auto">
-							
-							
-						
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
-							<li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
+							<li class="nav-item"><a href="cart.php" class="cart"><span class="ti-bag">
+								<?=(!empty($cart))?$cart:'';?></span></a></li>
 							<li class="nav-item">
-								<button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
-							</li>
+                                <button class="search"><a href="logout.php" class="tag" title="Logout"><span class="ti-shift-right "></span></a></button>
+                            </li>
 						</ul>
 					</div>
 				</div>
@@ -81,9 +158,7 @@
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 				<div class="col-first">
 					<h1>Confirmation</h1>
-					<nav class="d-flex align-items-center">
-						<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-					</nav>
+					
 				</div>
 			</div>
 		</div>
@@ -93,31 +168,8 @@
 	<!--================Order Details Area =================-->
 	<section class="order_details section_gap">
 		<div class="container">
-			<h3 class="title_confirmation">Thank you. Your order has been received.</h3>
-			<div class="row order_d_inner">
-				<div class="col-lg-6">
-					<div class="details_item">
-						<h4>Order Info</h4>
-						<ul class="list">
-							<li><a href="#"><span>Order number</span> : 60235</a></li>
-							<li><a href="#"><span>Date</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Total</span> : USD 2210</a></li>
-							<li><a href="#"><span>Payment method</span> : Check payments</a></li>
-						</ul>
-					</div>
-				</div>
-				<div class="col-lg-6">
-					<div class="details_item">
-						<h4>Shipping Address</h4>
-						<ul class="list">
-							<li><a href="#"><span>Street</span> : 56/8</a></li>
-							<li><a href="#"><span>City</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Country</span> : United States</a></li>
-							<li><a href="#"><span>Postcode </span> : 36952</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
+			<h3 class="title_confirmation"> <?=$MESSAGE;?></h3>
+			<p style="text-align: center"><a href="index.php"><span class="lnr lnr-arrow-left"></span> Back To Shopping</a></p>
 		</div>
 	</section>
 	<!--================End Order Details Area =================-->

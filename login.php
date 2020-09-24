@@ -7,7 +7,7 @@ if($_POST){
 	$email = $_POST['email'];
 	$pass = $_POST['password'];
 
-	$stmt = $pdo->prepare("SELECT email,password FROM users WHERE email=:email");
+	$stmt = $pdo->prepare("SELECT * FROM users WHERE email=:email");
 	$stmt->execute( array(":email"=>$email));
 	$user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -15,7 +15,6 @@ if($_POST){
 		if(password_verify($pass, $user['password'])){
 			$_SESSION['userid'] = $user['id'];
 			$_SESSION['username'] = $user['name'];
-
 			$_SESSION['logged_in'] = time();
 			header("Location: index.php");
 		}

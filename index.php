@@ -22,46 +22,54 @@
                   }else{
                     $pageno = 1;
                   }
-                  if(!empty($_GET['index'])){
-                    $index = $_GET['index'];
-                  }else{
-                    $index = 1;
-                  }
-                  if(!empty($_GET['data'])){
-                    $data = $_GET['data'];
-                  }
-
-                  $cat_id = 1;
-                  if(isset($_GET['cat_id'])){
-                  	setcookie('cat_id', $_GET['cat_id'], time() + (86400 * 30), "/");
-                  	$cat_id = $_GET['cat_id'];
-                  }elseif(isset($_COOKIE['cat_id'])){
-                  	$cat_id = $_COOKIE['cat_id'];
-                  }
+                 if(!empty($_GET['index'])){
+                   $index = $_GET['index'];
+                 }else{
+                   $index = 1;
+                 }
+                 if(!empty($_GET['data'])){
+                   $data = $_GET['data'];
+                 }
 
                   $numOfRecs = 2;
                   $offset = ($pageno - 1) * $numOfRecs;
 
-
                   if(empty($_POST['search']) && empty($_COOKIE['search'])){
-                    $pdostatement = $pdo->prepare("SELECT * FROM products WHERE cat_id=$cat_id ORDER BY id DESC");
-                    $pdostatement->execute();
-                    $result = $pdostatement->fetchAll();
-                    $total_pages = ceil(count($result)/$numOfRecs);
+                  	$sql1 = "SELECT * FROM products WHERE quantity>0 ORDER BY id DESC";
+                  	$sql2 = "SELECT * FROM products WHERE quantity>0 ORDER BY id DESC LIMIT $offset,$numOfRecs";
+
+                  	if(isset($_GET['cat_id'])){
+                  		$cat_id = $_GET['cat_id'];
+                  		$sql1 = "SELECT * FROM products WHERE cat_id=$cat_id AND quantity>0 ORDER BY id DESC";
+                  		$sql2 = "SELECT * FROM products WHERE cat_id=$cat_id AND quantity>0 ORDER BY id DESC LIMIT $offset,$numOfRecs";
+                  	}
+                  		$pdostatement = $pdo->prepare($sql1);
+	                    $pdostatement->execute();
+	                    $result = $pdostatement->fetchAll();
+	                    $total_pages = ceil(count($result)/$numOfRecs);
                     
-                    
-                       $pdostatement = $pdo->prepare("SELECT * FROM products WHERE cat_id=$cat_id ORDER BY id DESC LIMIT $offset,$numOfRecs");
+                       $pdostatement = $pdo->prepare($sql2);
                        $pdostatement->execute();
                        $products = $pdostatement->fetchAll();
+
+                    
                     
                   }else{
                     $searchkey = isset($_POST['search'])?$_POST['search']:$_COOKIE['search'];
-                    $pdostatement = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$searchkey%' AND cat_id=$cat_id ORDER BY id DESC");
-                    $pdostatement->execute();
-                    $result = $pdostatement->fetchAll();
-                    $total_pages = ceil(count($result)/$numOfRecs);
+                    $sql1 = "SELECT * FROM products WHERE name LIKE '%$searchkey%' AND quantity>0 ORDER BY id DESC";
+                  	$sql2 = "SELECT * FROM products WHERE name LIKE '%$searchkey%' AND quantity>0 ORDER BY id DESC LIMIT $offset,$numOfRecs";
+
+                  	if(isset($_GET['cat_id'])){
+                  		$cat_id = $_GET['cat_id'];
+                  		$sql1 = "SELECT * FROM products WHERE name LIKE '%$searchkey%' AND cat_id=$cat_id AND quantity>0 ORDER BY id DESC";
+                  		$sql2 = "SELECT * FROM products WHERE name LIKE '%$searchkey%' AND cat_id=$cat_id AND quantity>0 ORDER BY id DESC LIMIT $offset,$numOfRecs";
+                  	}
+                  		$pdostatement = $pdo->prepare($sql1);
+	                    $pdostatement->execute();
+	                    $result = $pdostatement->fetchAll();
+	                    $total_pages = ceil(count($result)/$numOfRecs);
                     
-                       $pdostatement = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$searchkey%' AND cat_id=$cat_id ORDER BY id DESC LIMIT $offset,$numOfRecs");
+                       $pdostatement = $pdo->prepare($sql2);
                        $pdostatement->execute();
                        $products = $pdostatement->fetchAll();
                     
@@ -124,27 +132,32 @@
 									break;
 							}
 						?>
-						<a href="?pageno=1&index=<? $index='first'; echo $index; ?>">First</a>
+						<a href="?pageno=1&index=<? $index='first'; echo $index; 
+						echo (isset($_GET['cat_id']))?'&cat_id='.$_GET['cat_id']:'';?>">First</a>
 
 						<a href="<?php if($leftno<=1){echo '#';}else{echo '?index=10&data='.$leftno;}?>"  
 						class="prev-arrow" style="<?=($leftno<= 1)?'pointer-events: none':''?>">
 							<i class="fa fa-long-arrow-left" aria-hidden="true"></i>
 						</a>
 
-						<a href="?pageno=<?= $leftno ?>&index=<? $index=1;echo $index; ?>"><?= $leftno; ?></a>
+						<a href="?pageno=<?= $leftno ?>&index=<? $index=1;echo $index; 
+						echo (isset($_GET['cat_id']))?'&cat_id='.$_GET['cat_id']:'';?>"
+						style="<?=($total_pages<1)?'pointer-events: none;color:#dddddd;':''?>"> <?=$leftno;?> </a>
 
-						<a href="?pageno=<?= $centerno ?>&index=<? $index=2;echo $index; ?>" 
-							style="<?=($total_pages<2)?'pointer-events: none;color:#dddddd;':''?>"><?= $centerno; ?></a>
+						<a href="?pageno=<?= $centerno ?>&index=<? $index=2;echo $index; 
+						echo (isset($_GET['cat_id']))?'&cat_id='.$_GET['cat_id']:''; ?>" 
+						style="<?=($total_pages<2)?'pointer-events: none;color:#dddddd;':''?>"> <?=$centerno;?> </a>
 
-						<a href="?pageno=<?= $rightno ?>&index=<? $index=3;echo $index; ?>" 
-							style="<?=($total_pages<3)?'pointer-events: none;color:#dddddd;':''?>" ><?= $rightno ?></a>
+						<a href="?pageno=<?= $rightno ?>&index=<? $index=3;echo $index; 
+						echo (isset($_GET['cat_id']))?'&cat_id='.$_GET['cat_id']:''; ?>" 
+						style="<?=($total_pages<3)?'pointer-events: none;color:#dddddd;':''?>"> <?=$rightno?> </a>
 
 						<a href="<?php if($rightno>= $total_pages){echo '#';}else{echo '?index=10&data='.$rightno;}?>" 
 						class="next-arrow" style="<?=($rightno>= $total_pages)?'pointer-events: none':''?>" >
 							<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
 						</a>
 
-						<a href="?pageno=<?=$total_pages?>&index=<? ($total_pages<3)?$index='first':$index='last'; echo $index ?>">Last</a>
+						<a href="?pageno=<?=$total_pages?>&index=<? ($total_pages<3)?$index='first':$index='last'; echo $index;echo (isset($_GET['cat_id']))?'&cat_id='.$_GET['cat_id']:'';?>">Last</a>
 					</div>
 			</div>
 			<div class="col-xl-9 col-lg-8 col-md-7">
@@ -162,19 +175,32 @@
 							<!-- single product -->
 						<div class="col-lg-4 col-md-6">
 							<div class="single-product">
-								<img class="img-fluid" src="img/<?= escape($product['image'])?>" alt="">
+								<a href="product_detail.php?id=<?=$product['id']?>" class="social-info">
+									<img class="img-fluid" src="img/<?= escape($product['image'])?>" alt="">
+								</a>
 								<div class="product-details">
 									<h6><?=escape($product['name'])?> </h6>
 									<div class="price">
 										<h6>$<?=escape($product['price'])?></h6>
 									</div>
 									<div class="prd-bottom">
+										<!-- <form action="addtocart.php" method="post" style="display: inline;border:1px solid">
+											<input type="hidden" name="_token" value="<?= $_SESSION['_token']; ?>">
+											<input type="hidden" name="id" value="<?=$product['id'];?>">
+											<input type="hidden" name="qty" value="1">
+											<div class="social-info">
+												<button  style="display: contents;" class="social-info">
+													<span class="ti-bag"></span>
+													<p class="hover-text" style="left:25px">add to bag</p>
+												</button>
+											</div>
+										</form> -->
 
-										<a href="" class="social-info">
+										<a href="addtocart.php?id=<?=$product['id'];?>
+										<?=(isset($_GET['cat_id']))?'&cat_id='.$_GET['cat_id']:'';?>" class="social-info">
 											<span class="ti-bag"></span>
 											<p class="hover-text">add to bag</p>
 										</a>
-										
 										<a href="product_detail.php?id=<?=$product['id']?>" class="social-info">
 											<span class="lnr lnr-move"></span>
 											<p class="hover-text">view more</p>

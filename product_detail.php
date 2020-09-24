@@ -16,6 +16,7 @@ require 'config/common.php';
 		$stmt->execute();
 		$product = $stmt->fetch(PDO::FETCH_ASSOC);
 	}
+
 ?>
 
 
@@ -24,39 +25,35 @@ require 'config/common.php';
 		<div class="container">
 			<div class="row s_product_inner">
 				<div class="col-lg-6">
-					<div class="s_Product_carousel">
 						<div class="single-prd-item">
-							<img class="img-fluid" src="img/<?= $product['image']?>" alt="">
+							<img class="img-fluid" src="img/<?= $product['image']?>" width="500" alt="">
 						</div>
-						<div class="single-prd-item">
-							<img class="img-fluid" src="img/<?= $product['image']?>" alt="">
-						</div>
-						<div class="single-prd-item">
-							<img class="img-fluid" src="img/category/s-p1.jpg" alt="">
-						</div>
-					</div>
 				</div>
 				<div class="col-lg-5 offset-lg-1">
 					<div class="s_product_text">
-						<h3><?= $product['name'] ?></h3>
-						<h2>$<?= $product['price'] ?></h2>
+						<h3><?= escape($product['name']) ?></h3>
+						<h2>$<?= escape($product['price']) ?></h2>
 						<ul class="list">
-							<li><a class="active" href="#"><span>Category</span> :  <?= $product['cat_name'] ?></a></li>
+							<li><a class="active" href="#"><span>Category</span> :  <?= escape($product['cat_name']) ?></a></li>
 							<li><a href="#"><span>Availibility</span> :  <?= ($product['quantity']>10)?'In Stock':'Sold Out';?></a></li>
 						</ul>
-						<p><?=$product['description']?></p>
-						<div class="product_count">
-							<label for="qty">Quantity:</label>
-							<input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
-							<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-							 class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-							<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-							 class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
-						</div>
-						<div class="card_area d-flex align-items-center">
-							<a class="primary-btn" href="cart.html">Add to Cart</a> 
-							<a class="btn btn-warnings" href="index.php">Back</a>
-						</div>
+						<p><?= escape($product['description'])?></p>
+						<form action="addtocart.php" method="post">
+							<input type="hidden" name="_token" value="<?= $_SESSION['_token']; ?>">
+							<input type="hidden" name="id" value="<?=$product['id'];?>">
+							<div class="product_count">
+								<label for="qty">Quantity:</label>
+								<input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
+								<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+								 class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+								<button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
+								 class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
+							</div>
+							<div class="card_area d-flex align-items-center">
+								<button class="primary-btn" style="border:none">Add to Cart</button> 
+								<a class="btn btn-warnings" href="index.php">Back</a>
+							</div>
+						</form>
 					</div>
 				</div>
 			</div>
