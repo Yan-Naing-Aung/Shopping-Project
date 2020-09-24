@@ -2,6 +2,10 @@
 require 'config/config.php';
 require 'config/common.php';
 
+if(empty($_SESSION['userid']) && empty($_SESSION['logged_in'])){
+	header("location: login.php");
+}
+
 	$user_id = $_SESSION['userid'];
 
 	$MESSAGE = "";
@@ -93,7 +97,7 @@ require 'config/common.php';
 	<!-- meta character set -->
 	<meta charset="UTF-8">
 	<!-- Site Title -->
-	<title>Karma Shop</title>
+	<title>YN Shopping</title>
 
 	<!--
 		CSS

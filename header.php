@@ -15,7 +15,7 @@
 	<!-- meta character set -->
 	<meta charset="UTF-8">
 	<!-- Site Title -->
-	<title>Karma Shop</title>
+	<title>YN Shopping</title>
 
 	<!--
             CSS
@@ -103,7 +103,8 @@
 		<div class="container">
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 				<div class="col-first">
-					<h1>Welcome</h1>
+					<h1>Welcome,</h1>
+					<p style="text-align: right;font-size: 20px;padding-right: 5px"><?=$_SESSION['username']?></p>
 				</div>
 			</div>
 		</div>

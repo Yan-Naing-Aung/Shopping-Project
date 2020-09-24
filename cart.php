@@ -1,6 +1,10 @@
 <?
 require 'config/config.php';
 require 'config/common.php';
+
+if(empty($_SESSION['userid']) && empty($_SESSION['logged_in'])){
+    header("location: login.php");
+}
 ?>
 
 <!DOCTYPE html>
@@ -20,7 +24,7 @@ require 'config/common.php';
     <!-- meta character set -->
     <meta charset="UTF-8">
     <!-- Site Title -->
-    <title>Karma Shop</title>
+    <title>YN Shopping</title>
 
     <!--
             CSS
@@ -43,7 +47,7 @@ require 'config/common.php';
             <nav class="navbar navbar-expand-lg navbar-light main_box">
                 <div class="container">
                     <!-- Brand and toggle get grouped for better mobile display -->
-                    <a class="navbar-brand logo_h" href="index.html"><img src="img/fav.png" alt=""> 
+                    <a class="navbar-brand logo_h" href="index.php"><img src="img/fav.png" alt=""> 
                     <span style="font-weight: 500">YN</span> Shopping</a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
