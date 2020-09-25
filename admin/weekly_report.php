@@ -28,15 +28,7 @@
           
           <div class="col-md-12">
             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Weekly Reports</h3>
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                
-                <br>
-               
-                <?php
+              <?php
                   $currentTime = date("Y-m-d");
                   $fromdate = date("Y-m-d",strtotime($currentTime."+1 day"));
                   $todate = date("Y-m-d",strtotime($currentTime."-7 day"));
@@ -47,7 +39,16 @@
                   );
                   $result = $pdostatement->fetchAll();
                 ?>
-
+              <div class="card-header">
+                <h3 class="card-title">Weekly Reports ( <?=date("d/M/Y",strtotime($todate))?> - <?=date("d/M/Y",strtotime($fromdate))?>)</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                
+                <div>
+                  <h6 style="display: inline;margin-right:5px">Number of Transactions: <?=count($result)?></h6>
+                </div>
+                <br>
                 <table  id="d-table">
                   <thead>                  
                     <tr>

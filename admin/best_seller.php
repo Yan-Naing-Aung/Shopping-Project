@@ -50,7 +50,7 @@
                       <th style="width: 10px">#</th>
                       <th>Product </th>
                       <th>Price</th>
-                      <th>Quantity</th>
+                      <th>Total Quantity Sold</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -68,7 +68,7 @@
                         <tr>
                           <td><?= $i ?></td>
                           <td><img src="../img/<?= escape($pResult['image']) ?>" width="80px">  <?= escape($pResult['name']) ?></td>
-                          <td><?= escape($pResult['price']) ?></td>
+                          <td>$<?= escape($pResult['price']) ?></td>
                           <td><?= escape($value['quantity']) ?></td>
                         </tr>
                     <?
@@ -86,7 +86,6 @@
               
             </div>
             <!-- /.card -->
-
 
             <!-- /.card -->
           </div>

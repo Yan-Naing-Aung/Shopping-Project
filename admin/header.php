@@ -105,7 +105,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                with font-awesome or any other icon font library -->
           
           <li class="nav-item">
-            <a href="index.php" class="nav-link">
+            <a href="index.php" class="nav-link <?=($page=='index.php')?'active':'';?>">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Products
@@ -114,7 +114,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
 
           <li class="nav-item">
-            <a href="category.php" class="nav-link">
+            <a href="category.php" class="nav-link <?=($page=='category.php')?'active':'';?>">
               <i class="nav-icon fas fa-list-alt"></i>
               <p>
                 Category
@@ -123,7 +123,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
 
           <li class="nav-item">
-            <a href="users.php" class="nav-link">
+            <a href="users.php" class="nav-link <?=($page=='users.php')?'active':'';?>">
               <i class="nav-icon fas fa-users"></i>
               <p>
                 Users
@@ -132,7 +132,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
 
           <li class="nav-item">
-            <a href="order_list.php" class="nav-link">
+            <a href="order_list.php" class="nav-link <?=($page=='order_list.php')?'active':'';?>">
               <i class="nav-icon fas fa-table"></i>
               <p>
                 Order
@@ -140,8 +140,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
           </li>
 
-           <li class="nav-item has-treeview menu">
-            <a href="#" class="nav-link active">
+           <li class="nav-item has-treeview menu-open">
+            <a href="#" class="nav-link">
               <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Reports
@@ -150,25 +150,25 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="weekly_report.php" class="nav-link active">
+                <a href="weekly_report.php" class="nav-link <?=($page=='weekly_report.php')?'active':'';?>">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Weekly Report</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="monthly_report.php" class="nav-link">
+                <a href="monthly_report.php" class="nav-link <?=($page=='monthly_report.php')?'active':'';?>">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Monthly Report</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="royal_cus.php" class="nav-link">
+                <a href="royal_cus.php" class="nav-link <?=($page=='royal_cus.php')?'active':'';?>">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Royal Customer</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="best_seller.php" class="nav-link">
+                <a href="best_seller.php" class="nav-link <?=($page=='best_seller.php')?'active':'';?>">
                   <i class="far fa-circle nav-icon"></i>
                   <p>Best Seller Items</p>
                 </a>
