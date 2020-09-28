@@ -39,7 +39,7 @@
                 <?php
                   $netAmount = 3000;
 
-                  $pdostatement = $pdo->prepare("SELECT sum(total_price) as total_amount,customer_id FROM sale_order GROUP BY customer_id ");
+                  $pdostatement = $pdo->prepare("SELECT sum(total_price) as total_amount,customer_id FROM sale_order GROUP BY customer_id HAVING sum(total_price) > $netAmount");
                   $pdostatement->execute();
                   $result = $pdostatement->fetchAll();
 
@@ -62,13 +62,9 @@
                       if($result){
                         $i=1;
                         foreach ($result as $value) {
-
-                          if($value['total_amount'] > $netAmount):
                             $userStmt = $pdo->prepare("SELECT * FROM users WHERE id=".$value['customer_id']);
                             $userStmt->execute();
                             $userResult = $userStmt->fetch();
-                          
-                          
                     ?>
                         <tr>
                           <td><?= $i ?></td>
@@ -79,7 +75,6 @@
                         </tr>
                     <?
                             $i++;
-                          endif;
                         }
                       }
                     ?>

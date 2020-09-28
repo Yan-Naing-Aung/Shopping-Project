@@ -39,7 +39,7 @@
                 <?php
                   $best_selling_quantity = 10;
 
-                  $pdostatement = $pdo->prepare("SELECT sum(quantity) as quantity,product_id FROM sale_order_detail GROUP BY product_id ");
+                  $pdostatement = $pdo->prepare("SELECT product_id,sum(quantity) as quantity FROM sale_order_detail GROUP BY product_id HAVING SUM(quantity)>$best_selling_quantity ");
                   $pdostatement->execute();
                   $result = $pdostatement->fetchAll();
                 ?>
@@ -60,7 +60,6 @@
                       if($result){
                         $i=1;
                         foreach ($result as $value) {
-                          if($value['quantity'] > $best_selling_quantity):
                             $pStmt = $pdo->prepare("SELECT * FROM products WHERE id=".$value['product_id']);
                             $pStmt->execute();
                             $pResult = $pStmt->fetch();
@@ -73,7 +72,6 @@
                         </tr>
                     <?
                           $i++;
-                        endif;
                         }
                       }
                     ?>
